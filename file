@@ -1,0 +1,14 @@
+Unit]
+Description=Privacy Guard Endpoint Agent
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/morel24d/privacy_firewall
+ExecStart=/home/morel24d/privacy_firewall/.venv/bin/python -u /home/morel24d/privacy_firewall/main.py --guard --paths /home/morel24d/Descargas /home/morel24d/Escritorio /home/morel24d/Documentos
+Restart=on-failure
+RestartSec=10
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=default.target

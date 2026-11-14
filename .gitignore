@@ -1,0 +1,14 @@
+# Entorno virtual (pesa mucho y es local)
+.venv/
+
+# Carpetas de datos locales (no queremos subir nuestros logs ni cuarentena)
+quarantine/
+logs/
+data/malicious_hashes.txt
+
+# Archivos temporales de Python
+__pycache__/
+*.pyc
+
+# Archivos del sistema
+.DS_Store
