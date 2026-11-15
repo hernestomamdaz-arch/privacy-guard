@@ -22,6 +22,9 @@ class Quarantine:
             with open(dest_path + ".meta", "w", encoding="utf-8") as m:
                 m.write(f"original_path={filepath}\nsha256={sha}\nreason={reason}\n")
             return dest_path
+        except FileNotFoundError:
+            # Si el archivo ya fue movido por otro hilo, lo ignoramos silenciosamente
+            return None
         except Exception as e:
             print(f"[!] No se pudo poner en cuarentena {filepath}: {e}")
             return None

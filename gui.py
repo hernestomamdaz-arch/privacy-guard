@@ -6,6 +6,7 @@ import platform
 import shutil
 from PIL import Image
 from tkinter import messagebox
+from core.plugin_loader import cargar_plugins
 
 # --- CONFIGURACIÓN DE COLORES ---
 COLOR_BG = ("#F3F4F6", "#0B0910")          
@@ -24,24 +25,12 @@ SISTEMA = platform.system()
 ctk.set_appearance_mode("dark")
 DIRECTORIO_ACTUAL = os.path.dirname(os.path.abspath(__file__))
 
-# --- DICCIONARIO DE TRADUCCIONES ---
 TRADUCCIONES = {
-    "es_latam": {"dashboard": "Dashboard", "quarantine": "Cuarentena", "settings": "Ajustes","status": "Estado del Sistema", "protection": "PROTECCIÓN", "threats": "AMENAZAS BLOQUEADAS","dirs": "DIRECTORIOS", "monitored": "3 Monitoreados", "start": "▶ ACTIVAR ESCUDO","stop": "⏹ DETENER", "console": "> Consola de Eventos en Tiempo Real","active": "ACTIVA 🟢", "inactive": "DETENIDA 🔴", "error": "ERROR ⚠️","settings_title": "⚙️ Ajustes de la Aplicación", "lang_lbl": "Idioma:", "theme_lbl": "Tema Visual:","theme_dark": "Oscuro", "theme_light": "Claro", "close": "Cerrar", "info": "Información del Sistema","quar_title": "🗄️ Cuarentena de Archivos", "restore": "Restaurar", "delete": "Eliminar","empty_q": "No hay archivos bloqueados. Tu sistema está limpio.", "confirm_del": "¿Eliminar permanentemente?","restore_err": "No se pudo restaurar el archivo."},
-    "es_spain": {"dashboard": "Panel", "quarantine": "Cuarentena", "settings": "Ajustes","status": "Estado del Sistema", "protection": "PROTECCIÓN", "threats": "AMENAZAS BLOQUEADAS","dirs": "DIRECTORIOS", "monitored": "3 Monitorizados", "start": "▶ ACTIVAR ESCUDO","stop": "⏹ DETENER", "console": "> Consola de Eventos en Tiempo Real","active": "ACTIVA 🟢", "inactive": "DETENIDA 🔴", "error": "ERROR ⚠️","settings_title": "⚙️ Ajustes de la Aplicación", "lang_lbl": "Idioma:", "theme_lbl": "Tema Visual:","theme_dark": "Oscuro", "theme_light": "Claro", "close": "Cerrar", "info": "Información del Sistema","quar_title": "🗄️ Cuarentena de Archivos", "restore": "Restaurar", "delete": "Eliminar","empty_q": "No hay archivos bloqueados. Tu sistema está limpio.", "confirm_del": "¿Eliminar permanentemente?","restore_err": "No se pudo restaurar el archivo."},
-    "en_us": {"dashboard": "Dashboard", "quarantine": "Quarantine", "settings": "Settings","status": "System Status", "protection": "PROTECTION", "threats": "THREATS BLOCKED","dirs": "DIRECTORIES", "monitored": "3 Monitored", "start": "▶ ACTIVATE SHIELD","stop": "⏹ STOP", "console": "> Real-time Event Console","active": "ACTIVE 🟢", "inactive": "STOPPED 🔴", "error": "ERROR ⚠️","settings_title": "⚙️ App Settings", "lang_lbl": "Language:", "theme_lbl": "Visual Theme:","theme_dark": "Dark", "theme_light": "Light", "close": "Close", "info": "System Information","quar_title": "🗄️ File Quarantine", "restore": "Restore", "delete": "Delete","empty_q": "No blocked files. Your system is clean.", "confirm_del": "Permanently delete?","restore_err": "Could not restore file."},
-    "en_uk": {"dashboard": "Dashboard", "quarantine": "Quarantine", "settings": "Settings","status": "System Status", "protection": "PROTECTION", "threats": "THREATS BLOCKED","dirs": "DIRECTORIES", "monitored": "3 Monitored", "start": "▶ ACTIVATE SHIELD","stop": "⏹ STOP", "console": "> Real-time Event Console","active": "ACTIVE 🟢", "inactive": "STOPPED 🔴", "error": "ERROR ⚠️","settings_title": "⚙️ App Settings", "lang_lbl": "Language:", "theme_lbl": "Visual Theme:","theme_dark": "Dark", "theme_light": "Light", "close": "Close", "info": "System Information","quar_title": "🗄️ File Quarantine", "restore": "Restore", "delete": "Delete","empty_q": "No blocked files. Your system is clean.", "confirm_del": "Permanently delete?","restore_err": "Could not restore file."},
-    "pt_br": {"dashboard": "Painel", "quarantine": "Quarentena", "settings": "Configurações","status": "Status do Sistema", "protection": "PROTEÇÃO", "threats": "AMEAÇAS BLOQUEADAS","dirs": "DIRETÓRIOS", "monitored": "3 Monitorados", "start": "▶ ATIVAR ESCUDO","stop": "⏹ PARAR", "console": "> Console de Eventos em Tempo Real","active": "ATIVA 🟢", "inactive": "PARADA 🔴", "error": "ERRO ⚠️","settings_title": "⚙️ Configurações do App", "lang_lbl": "Idioma:", "theme_lbl": "Tema Visual:","theme_dark": "Escuro", "theme_light": "Claro", "close": "Fechar", "info": "Informações do Sistema","quar_title": "🗄️ Quarentena de Arquivos", "restore": "Restaurar", "delete": "Excluir","empty_q": "Nenhum arquivo bloqueado. Seu sistema está limpo.", "confirm_del": "Excluir permanentemente?","restore_err": "Não foi possível restaurar o arquivo."},
-    "ru": {"dashboard": "Панель", "quarantine": "Карантин", "settings": "Настройки","status": "Состояние системы", "protection": "ЗАЩИТА", "threats": "УГРОЗ ЗАБЛОКИРОВАНО","dirs": "ПАПКИ", "monitored": "Отслеживается 3", "start": "▶ АКТИВИРОВАТЬ","stop": "⏹ ОСТАНОВИТЬ", "console": "> Консоль событий в реальном времени","active": "АКТИВНА 🟢", "inactive": "ОСТАНОВЛЕНА 🔴", "error": "ОШИБКА ⚠️","settings_title": "⚙️ Настройки приложения", "lang_lbl": "Язык:", "theme_lbl": "Тема:","theme_dark": "Темная", "theme_light": "Светлая", "close": "Закрыть", "info": "Информация о системе","quar_title": "🗄️ Карантин файлов", "restore": "Восстановить", "delete": "Удалить","empty_q": "Нет заблокированных файлов. Ваша система чиста.", "confirm_del": "Удалить навсегда?","restore_err": "Не удалось восстановить файл."}
+    "es_latam": {"dashboard": "Dashboard", "quarantine": "Cuarentena", "plugins": "Plugins", "settings": "Ajustes", "status": "Estado del Sistema", "protection": "PROTECCIÓN", "threats": "AMENAZAS BLOQUEADAS", "dirs": "DIRECTORIOS", "monitored": "3 Monitoreados", "start": "▶ ACTIVAR ESCUDO", "stop": "⏹ DETENER", "console": "> Consola de Eventos en Tiempo Real", "active": "ACTIVA 🟢", "inactive": "DETENIDA 🔴", "error": "ERROR ⚠️", "settings_title": "⚙️ Ajustes de la Aplicación", "lang_lbl": "Idioma:", "theme_lbl": "Tema Visual:", "theme_dark": "Oscuro", "theme_light": "Claro", "close": "Cerrar", "info": "Información del Sistema", "quar_title": "🗄️ Cuarentena de Archivos", "restore": "Restaurar", "delete": "Eliminar", "empty_q": "No hay archivos bloqueados.", "confirm_del": "¿Eliminar permanentemente?", "restore_err": "No se pudo restaurar.", "plug_title": "🔌 Extensiones y Plugins", "plug_desc": "Plugins cargados desde la carpeta /plugins:", "open_folder": "Abrir Carpeta de Plugins"},
+    "en_us": {"dashboard": "Dashboard", "quarantine": "Quarantine", "plugins": "Plugins", "settings": "Settings", "status": "System Status", "protection": "PROTECTION", "threats": "THREATS BLOCKED", "dirs": "DIRECTORIES", "monitored": "3 Monitored", "start": "▶ ACTIVATE SHIELD", "stop": "⏹ STOP", "console": "> Real-time Event Console", "active": "ACTIVE 🟢", "inactive": "STOPPED 🔴", "error": "ERROR ⚠️", "settings_title": "⚙️ App Settings", "lang_lbl": "Language:", "theme_lbl": "Visual Theme:", "theme_dark": "Dark", "theme_light": "Light", "close": "Close", "info": "System Information", "quar_title": "🗄️ File Quarantine", "restore": "Restore", "delete": "Delete", "empty_q": "No blocked files.", "confirm_del": "Permanently delete?", "restore_err": "Could not restore.", "plug_title": "🔌 Extensions & Plugins", "plug_desc": "Plugins loaded from /plugins folder:", "open_folder": "Open Plugins Folder"},
 }
 
-LOGS_TRADUCCION = {
-    "en_us": {"Vigilando (Malware + Ransomware + Binarios)": "Watching (Malware + Ransomware + Binaries)","Monitor de procesos iniciado (solo alerta, no bloquea).": "Process monitor started (alert only, no block).","Agente endpoint activo. Ctrl+C para salir.": "Endpoint agent active. Ctrl+C to exit.","[ALERTA BINARIO]": "[BINARY ALERT]","usa funciones inseguras:": "uses unsafe functions:","[ALERTA]": "[ALERT]","Movido a cuarentena:": "Moved to quarantine:","Deteniendo protección...": "Stopping protection...","Iniciando motores de protección...": "Starting protection engines...","Sistema:": "System:", "Reglas YARA:": "YARA Rules:"},
-    "en_uk": {"Vigilando (Malware + Ransomware + Binarios)": "Watching (Malware + Ransomware + Binaries)","Monitor de procesos iniciado (solo alerta, no bloquea).": "Process monitor started (alert only, no block).","Agente endpoint activo. Ctrl+C para salir.": "Endpoint agent active. Ctrl+C to exit.","[ALERTA BINARIO]": "[BINARY ALERT]","usa funciones inseguras:": "uses unsafe functions:","[ALERTA]": "[ALERT]","Movido a cuarentena:": "Moved to quarantine:","Deteniendo protección...": "Stopping protection...","Iniciando motores de protección...": "Starting protection engines...","Sistema:": "System:", "Reglas YARA:": "YARA Rules:"},
-    "pt_br": {"Vigilando (Malware + Ransomware + Binarios)": "Monitorando (Malware + Ransomware + Binários)","Monitor de processos iniciado (solo alerta, no bloquea).": "Monitor de processos iniciado (apenas alerta, não bloqueia).","Agente endpoint ativo. Ctrl+C para salir.": "Agente endpoint ativo. Ctrl+C para sair.","[ALERTA BINARIO]": "[ALERTA BINÁRIO]","usa funciones inseguras:": "usa funções inseguras:","[ALERTA]": "[ALERTA]","Movido a cuarentena:": "Movido para quarentena:","Deteniendo protección...": "Parando proteção...","Iniciando motores de protección...": "Iniciando motores de proteção...","Sistema:": "Sistema:", "Reglas YARA:": "Regras YARA:"},
-    "ru": {"Vigilando (Malware + Ransomware + Binarios)": "Отслеживание (Вредоносное ПО + Программы-вымогатели + Бинарные файлы)","Monitor de procesos iniciado (solo alerta, no bloquea).": "Монитор процессов запущен (только оповещение, без блокировки).","Agente endpoint activo. Ctrl+C para salir.": "Агент endpoint активен. Ctrl+C для выхода.","[ALERTA BINARIO]": "[БИНАРНАЯ УГРОЗА]","usa funciones inseguras:": "использует небезопасные функции:","[ALERTA]": "[УГРОЗА]","Movido a cuarentena:": "Перемещено в карантин:","Deteniendo protección...": "Остановка защиты...","Iniciando motores de protección...": "Запуск движков защиты...","Sistema:": "Система:", "Reglas YARA:": "Правила YARA:"}
-}
-
-IDIOMAS_UI = {"Español (LatAm)": "es_latam","Español (España)": "es_spain","English (US)": "en_us","English (UK)": "en_uk","Português (Brasil)": "pt_br","Русский (Russian)": "ru"}
+IDIOMAS_UI = {"Español (LatAm)": "es_latam", "English (US)": "en_us"}
 
 def procesar_logo():
     ruta = os.path.join(DIRECTORIO_ACTUAL, "logo.png")
@@ -70,11 +59,8 @@ class PrivacyGuardApp(ctk.CTk):
         self.grid_columnconfigure(1, weight=1)
         self.idioma_actual = "es_latam"
 
-        # Lista de ventanas hijas y registro del estado de la ventana principal
         self.ventanas_hijas = []
         self._last_geom = (0, 0, 900, 650)
-        
-        # Vincular el evento de movimiento/redimensión
         self.bind("<Configure>", self.gestionar_ventanas_hijas)
 
         self.construir_sidebar()
@@ -84,57 +70,34 @@ class PrivacyGuardApp(ctk.CTk):
         self.update_logs()
 
     def gestionar_ventanas_hijas(self, event):
-        """Controla las ventanas secundarias al mover o redimensionar la principal."""
         if event.widget == self:
             x, y = self.winfo_x(), self.winfo_y()
             w, h = self.winfo_width(), self.winfo_height()
-            
-            # Evitar bucles si no hay cambios reales
-            if (x, y, w, h) == self._last_geom:
-                return
-                
-            dx = x - self._last_geom[0]
-            dy = y - self._last_geom[1]
+            if (x, y, w, h) == self._last_geom: return
             dw = w - self._last_geom[2]
             dh = h - self._last_geom[3]
-            
             self._last_geom = (x, y, w, h)
             
             for item in list(self.ventanas_hijas):
                 v = item["ventana"]
                 if v.winfo_exists():
-                    # Si el tamaño de la ventana principal cambió (maximizar/pantalla completa)
                     if dw != 0 or dh != 0:
-                        # Re-centrar la ventana hija en el nuevo espacio
                         item["offset_x"] = (w - item["ancho"]) // 2
                         item["offset_y"] = (h - item["alto"]) // 2
-                    
-                    # Aplicar nueva posición
-                    nx = x + item["offset_x"]
-                    ny = y + item["offset_y"]
-                    v.geometry(f"+{nx}+{ny}")
+                    v.geometry(f"+{x + item['offset_x']}+{y + item['offset_y']}")
                 else:
                     self.ventanas_hijas.remove(item)
 
     def crear_ventana_emergente(self, titulo, ancho, alto):
-        """Crea una ventana sin bordes nativos que sigue a la principal."""
         v = ctk.CTkToplevel(self)
         v.title(titulo)
         v.overrideredirect(True)
         v.attributes("-topmost", True)
-        
-        # Calcular posición inicial centrada
         px, py = self.winfo_x(), self.winfo_y()
         pw, ph = self.winfo_width(), self.winfo_height()
-        x = px + (pw - ancho) // 2
-        y = py + (ph - alto) // 2
+        x, y = px + (pw - ancho) // 2, py + (ph - alto) // 2
         v.geometry(f"{ancho}x{alto}+{x}+{y}")
-        
-        # Guardar en la lista
-        offset_x = x - px
-        offset_y = y - py
-        self.ventanas_hijas.append({"ventana": v, "ancho": ancho, "alto": alto, "offset_x": offset_x, "offset_y": offset_y})
-        
+        self.ventanas_hijas.append({"ventana": v, "ancho": ancho, "alto": alto, "offset_x": x - px, "offset_y": y - py})
         marco = ctk.CTkFrame(v, fg_color=COLOR_BG, border_width=2, border_color=COLOR_BORDER, corner_radius=10)
         marco.pack(fill="both", expand=True)
         return v, marco
@@ -142,15 +105,12 @@ class PrivacyGuardApp(ctk.CTk):
     def construir_sidebar(self):
         self.sidebar = ctk.CTkFrame(self, width=250, corner_radius=0, fg_color=COLOR_SIDEBAR, border_width=1, border_color=COLOR_BORDER)
         self.sidebar.grid(row=0, column=0, sticky="nsew")
-        self.sidebar.grid_rowconfigure(5, weight=1)
+        self.sidebar.grid_rowconfigure(6, weight=1)
 
         self.logo_img = procesar_logo()
         if self.logo_img:
             self.logo_label = ctk.CTkLabel(self.sidebar, image=self.logo_img, text="")
             self.logo_label.grid(row=0, column=0, pady=(30, 20), padx=20)
-        else:
-            self.title_label = ctk.CTkLabel(self.sidebar, text="PRIVACY\nGUARD", font=("Segoe UI", 24, "bold"), text_color=COLOR_PRIMARY, justify="center")
-            self.title_label.grid(row=0, column=0, pady=(30, 20))
 
         self.btn_dash = ctk.CTkButton(self.sidebar, fg_color=COLOR_CARD, text_color=COLOR_PRIMARY, hover_color=COLOR_BORDER, anchor="w", font=("Segoe UI", 14, "bold"))
         self.btn_dash.grid(row=2, column=0, padx=15, pady=5, sticky="ew")
@@ -158,11 +118,15 @@ class PrivacyGuardApp(ctk.CTk):
         self.btn_quarantine = ctk.CTkButton(self.sidebar, fg_color="transparent", text_color=COLOR_TEXT, hover_color=COLOR_CARD, anchor="w", font=("Segoe UI", 14), command=self.abrir_ventana_cuarentena)
         self.btn_quarantine.grid(row=3, column=0, padx=15, pady=5, sticky="ew")
 
+        # NUEVO BOTÓN DE PLUGINS
+        self.btn_plugins = ctk.CTkButton(self.sidebar, fg_color="transparent", text_color=COLOR_TEXT, hover_color=COLOR_CARD, anchor="w", font=("Segoe UI", 14), command=self.abrir_ventana_plugins)
+        self.btn_plugins.grid(row=4, column=0, padx=15, pady=5, sticky="ew")
+
         self.btn_settings = ctk.CTkButton(self.sidebar, fg_color="transparent", text_color=COLOR_TEXT, hover_color=COLOR_CARD, anchor="w", font=("Segoe UI", 14), command=self.abrir_ajustes)
-        self.btn_settings.grid(row=4, column=0, padx=15, pady=5, sticky="ew")
+        self.btn_settings.grid(row=5, column=0, padx=15, pady=5, sticky="ew")
 
         self.label_version = ctk.CTkLabel(self.sidebar, text="v0.1.0 - Open Source", font=("Segoe UI", 10), text_color="#5A4A70")
-        self.label_version.grid(row=6, column=0, pady=15)
+        self.label_version.grid(row=7, column=0, pady=15)
 
     def construir_main_panel(self):
         self.main = ctk.CTkFrame(self, fg_color="transparent")
@@ -219,6 +183,7 @@ class PrivacyGuardApp(ctk.CTk):
         t = TRADUCCIONES[self.idioma_actual]
         self.btn_dash.configure(text=f"📊 {t['dashboard']}")
         self.btn_quarantine.configure(text=f"📁 {t['quarantine']}")
+        self.btn_plugins.configure(text=f"🔌 {t['plugins']}")
         self.btn_settings.configure(text=f"⚙️ {t['settings']}")
         self.header.configure(text=t['status'])
         self.lbl_prot.configure(text=t['protection'])
@@ -235,10 +200,42 @@ class PrivacyGuardApp(ctk.CTk):
         if not os.path.exists(path): path = os.path.join(DIRECTORIO_ACTUAL, "quarantine")
         return path
 
+    def abrir_ventana_plugins(self):
+        t = TRADUCCIONES[self.idioma_actual]
+        v, marco = self.crear_ventana_emergente(t['plugins'], 500, 400)
+        
+        top_bar = ctk.CTkFrame(marco, fg_color="transparent")
+        top_bar.pack(fill="x", padx=10, pady=10)
+        ctk.CTkLabel(top_bar, text=t['plug_title'], font=("Segoe UI", 18, "bold"), text_color=COLOR_PRIMARY).pack(side="left", padx=10)
+        ctk.CTkButton(top_bar, text="✖", width=30, height=30, fg_color="transparent", hover_color=COLOR_RED, text_color=COLOR_TEXT, command=v.destroy).pack(side="right")
+
+        ctk.CTkLabel(marco, text=t['plug_desc'], font=("Segoe UI", 12), text_color=COLOR_TEXT).pack(pady=5)
+
+        scroll_frame = ctk.CTkScrollableFrame(marco, fg_color="transparent")
+        scroll_frame.pack(fill="both", expand=True, padx=20, pady=10)
+
+        # Cargar plugins en vivo
+        plugins_dir = os.path.join(DIRECTORIO_ACTUAL, "plugins")
+        plugins = cargar_plugins(plugins_dir)
+        
+        if not plugins:
+            ctk.CTkLabel(scroll_frame, text="No hay plugins instalados.", text_color=COLOR_TEXT).pack(pady=20)
+        else:
+            for p in plugins:
+                card = ctk.CTkFrame(scroll_frame, fg_color=COLOR_CARD, corner_radius=8, border_width=1, border_color=COLOR_BORDER)
+                card.pack(fill="x", pady=5, padx=5)
+                ctk.CTkLabel(card, text=f"✅ {p.__name__}", font=("Segoe UI", 12, "bold"), text_color=COLOR_TEXT, anchor="w").pack(side="left", padx=15, pady=10)
+
+        def abrir_carpeta():
+            os.makedirs(plugins_dir, exist_ok=True)
+            if SISTEMA == "Windows": os.startfile(plugins_dir)
+            else: subprocess.Popen(["xdg-open", plugins_dir])
+            
+        ctk.CTkButton(marco, text=t['open_folder'], command=abrir_carpeta, fg_color=COLOR_PRIMARY).pack(pady=15)
+
     def abrir_ventana_cuarentena(self):
         t = TRADUCCIONES[self.idioma_actual]
         v, marco = self.crear_ventana_emergente(t['quarantine'], 600, 500)
-        
         top_bar = ctk.CTkFrame(marco, fg_color="transparent")
         top_bar.pack(fill="x", padx=10, pady=10)
         ctk.CTkLabel(top_bar, text=t['quar_title'], font=("Segoe UI", 18, "bold"), text_color=COLOR_PRIMARY).pack(side="left", padx=10)
@@ -248,7 +245,6 @@ class PrivacyGuardApp(ctk.CTk):
         scroll_frame.pack(fill="both", expand=True, padx=20, pady=(0, 20))
 
         q_path = self.get_quarantine_path()
-        
         try:
             archivos = [f for f in os.listdir(q_path) if not f.endswith('.meta')]
             if not archivos:
@@ -257,18 +253,12 @@ class PrivacyGuardApp(ctk.CTk):
                 for arch in archivos:
                     filepath = os.path.join(q_path, arch)
                     meta_path = filepath + ".meta"
-                    
                     card = ctk.CTkFrame(scroll_frame, fg_color=COLOR_CARD, corner_radius=8, border_width=1, border_color=COLOR_BORDER)
                     card.pack(fill="x", pady=5, padx=5)
-                    
                     txt = arch if len(arch) < 40 else arch[:37] + "..."
                     ctk.CTkLabel(card, text=f"📄 {txt}", font=("Segoe UI", 12, "bold"), text_color=COLOR_TEXT, anchor="w").pack(side="left", padx=15, pady=10)
-                    
-                    btn_del = ctk.CTkButton(card, text="🗑️", width=30, fg_color=COLOR_RED, hover_color="#EF233C", command=lambda f=filepath, m=meta_path, vv=v: self.eliminar_archivo(f, m, vv))
-                    btn_del.pack(side="right", padx=5)
-                    
-                    btn_rest = ctk.CTkButton(card, text=t['restore'], width=80, fg_color=COLOR_GREEN, hover_color="#10B981", text_color="#000000", command=lambda f=filepath, m=meta_path, vv=v: self.restaurar_archivo(f, m, vv))
-                    btn_rest.pack(side="right", padx=5)
+                    ctk.CTkButton(card, text="🗑️", width=30, fg_color=COLOR_RED, hover_color="#EF233C", command=lambda f=filepath, m=meta_path, vv=v: self.eliminar_archivo(f, m, vv)).pack(side="right", padx=5)
+                    ctk.CTkButton(card, text=t['restore'], width=80, fg_color=COLOR_GREEN, hover_color="#10B981", text_color="#000000", command=lambda f=filepath, m=meta_path, vv=v: self.restaurar_archivo(f, m, vv)).pack(side="right", padx=5)
         except FileNotFoundError:
             ctk.CTkLabel(scroll_frame, text=t['empty_q'], font=("Segoe UI", 14), text_color=COLOR_TEXT).pack(pady=50)
 
@@ -287,19 +277,14 @@ class PrivacyGuardApp(ctk.CTk):
         try:
             if os.path.exists(meta_path):
                 with open(meta_path, "r", encoding="utf-8") as f:
-                    lineas = f.readlines()
-                    original_path = ""
-                    for l in lineas:
+                    for l in f.readlines():
                         if l.startswith("original_path="):
                             original_path = l.replace("original_path=", "").strip()
-                            break
-                
-                if original_path:
-                    shutil.move(filepath, original_path)
-                    os.remove(meta_path)
-                    ventana.destroy()
-                    self.abrir_ventana_cuarentena()
-                    return
+                            shutil.move(filepath, original_path)
+                            os.remove(meta_path)
+                            ventana.destroy()
+                            self.abrir_ventana_cuarentena()
+                            return
             shutil.move(filepath, os.path.expanduser(f"~/{os.path.basename(filepath)}"))
             if os.path.exists(meta_path): os.remove(meta_path)
             ventana.destroy()
@@ -310,7 +295,6 @@ class PrivacyGuardApp(ctk.CTk):
     def abrir_ajustes(self):
         t = TRADUCCIONES[self.idioma_actual]
         v, marco = self.crear_ventana_emergente(t['settings'], 450, 550)
-        
         top_bar = ctk.CTkFrame(marco, fg_color="transparent")
         top_bar.pack(fill="x", padx=10, pady=10)
         ctk.CTkLabel(top_bar, text=t['settings_title'], font=("Segoe UI", 18, "bold"), text_color=COLOR_PRIMARY).pack(side="left", padx=10)
@@ -322,33 +306,27 @@ class PrivacyGuardApp(ctk.CTk):
         frame_lang = ctk.CTkFrame(content, fg_color="transparent")
         frame_lang.pack(fill="x", pady=10)
         ctk.CTkLabel(frame_lang, text=t['lang_lbl'], font=("Segoe UI", 14), text_color=COLOR_TEXT).pack(anchor="w")
-        
-        nombre_actual = [k for k, v_ in IDIOMAS_UI.items() if v_ == self.idioma_actual][0]
-        combo_lang = ctk.CTkOptionMenu(frame_lang, values=list(IDIOMAS_UI.keys()), fg_color=COLOR_PRIMARY, button_color=COLOR_ACCENT, command=self.cambiar_idioma)
-        combo_lang.set(nombre_actual)
+        combo_lang = ctk.CTkOptionMenu(frame_lang, values=list(IDIOMAS_UI.keys()), fg_color=COLOR_PRIMARY, command=self.cambiar_idioma)
+        combo_lang.set([k for k, v_ in IDIOMAS_UI.items() if v_ == self.idioma_actual][0])
         combo_lang.pack(fill="x", pady=5)
 
         frame_theme = ctk.CTkFrame(content, fg_color="transparent")
         frame_theme.pack(fill="x", pady=10)
         ctk.CTkLabel(frame_theme, text=t['theme_lbl'], font=("Segoe UI", 14), text_color=COLOR_TEXT).pack(anchor="w")
-        
-        combo_theme = ctk.CTkOptionMenu(frame_theme, values=[t['theme_dark'], t['theme_light']], fg_color=COLOR_PRIMARY, button_color=COLOR_ACCENT, command=self.cambiar_tema)
+        combo_theme = ctk.CTkOptionMenu(frame_theme, values=[t['theme_dark'], t['theme_light']], fg_color=COLOR_PRIMARY, command=self.cambiar_tema)
         combo_theme.set(t['theme_dark'] if ctk.get_appearance_mode() == "Dark" else t['theme_light'])
         combo_theme.pack(fill="x", pady=5)
         
         info_frame = ctk.CTkFrame(content, fg_color=COLOR_CARD, corner_radius=10, border_width=1, border_color=COLOR_BORDER)
         info_frame.pack(pady=10, fill="both", expand=True)
-        
-        info_text = f"{t['info']}:\nS.O: {SISTEMA}\nPython: {platform.python_version()}\nDir: {DIRECTORIO_ACTUAL}\nMotor: YARA + Entropía\nRutas: 3"
-        ctk.CTkLabel(info_frame, text=info_text, justify="left", font=("Consolas", 11), text_color=COLOR_TEXT).pack(padx=20, pady=20, anchor="w")
+        ctk.CTkLabel(info_frame, text=f"{t['info']}:\nS.O: {SISTEMA}\nPython: {platform.python_version()}\nDir: {DIRECTORIO_ACTUAL}", justify="left", font=("Consolas", 11), text_color=COLOR_TEXT).pack(padx=20, pady=20, anchor="w")
 
     def cambiar_idioma(self, seleccion):
         self.idioma_actual = IDIOMAS_UI[seleccion]
         self.aplicar_idioma()
 
     def cambiar_tema(self, seleccion):
-        if seleccion in ["Oscuro", "Dark", "Escuro", "Темная"]: ctk.set_appearance_mode("dark")
-        else: ctk.set_appearance_mode("light")
+        ctk.set_appearance_mode("dark" if seleccion in ["Oscuro", "Dark"] else "light")
 
     def start_service(self):
         t = TRADUCCIONES[self.idioma_actual]
@@ -387,13 +365,7 @@ class PrivacyGuardApp(ctk.CTk):
             except Exception as e: return f"[!] Error: {e}"
 
         def update_ui():
-            logs = fetch()
-            if self.idioma_actual in LOGS_TRADUCCION:
-                for es_text, target_text in LOGS_TRADUCCION[self.idioma_actual].items():
-                    logs = logs.replace(es_text, target_text)
-            self._apply_logs(logs)
-            amenazas = logs.count("ALERTA") + logs.count("ALERT") + logs.count("УГРОЗА") + logs.count("УГРОЗ")
-            self.label_threats.configure(text=str(amenazas))
+            self._apply_logs(fetch())
             self.after(5000, self.update_logs)
 
         threading.Thread(target=lambda: self.after(0, update_ui), daemon=True).start()
