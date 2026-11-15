@@ -1,23 +1,26 @@
-# 🛡️ Privacy Guard
+# 🛡 Privacy Guard (v0.1.0)
 
-Agente de seguridad ligero y de código abierto para Linux (y preparado para Windows). 
-Diseñado para proteger la privacidad y detectar amenazas locales sin enviar datos a la nube.
+Agente de seguridad (EDR ligero) y cortafuegos de privacidad de código abierto. Diseñado para proteger tu ordenador (Linux y Windows) sin enviar datos a la nube. Esta es la primera versión oficial (Alpha).
 
-## 🚀 Características
-- **Escaneo de Malware:** Detección por firmas (YARA) y hashes SHA-256 conocidos.
-- **Cuarentena Automática:** Mueve archivos maliciosos a un entorno seguro de forma automática.
-- **Anti-Ransomware:** Detección heurística basada en comportamiento (ráfagas de modificaciones y alta entropía).
-- **Monitor de Procesos:** Alerta sobre ejecutables en rutas temporales sospechosas.
-- **Notificaciones:** Alertas de escritorio en tiempo real.
+## ✨ Características Principales
+- **Interfaz Gráfica Moderna:** Panel de control (Dashboard) con diseño Cyberpunk y temas Claro/Oscuro.
+- **Soporte Multi-idioma:** Español (LatAm/España), Inglés (US/UK), Portugués (Brasil) y Ruso.
+- **Escaneo de Malware:** Detección por firmas (YARA) y hashes SHA-256.
+- **Anti-Ransomware (Heurístico):** Detección de ráfagas de cifrado y entropía alta (Shannon).
+- **Análisis de Binarios:** Detecta ejecutables con funciones inseguras en C/C++ (ej. strcpy).
+- **Gestión de Cuarentena:** Aísla amenazas y permite restaurar falsos positivos desde la interfaz.
+- **Instaladores Automáticos:** Scripts para systemd (Linux) y .bat (Windows).
 
-## ⚙️ Instalación en Linux (Fedora, Arch, Ubuntu, Debian)
-1. Clona este repositorio: `git clone https://github.com/TU_USUARIO/privacy-guard.git`
-2. Entra al directorio: `cd privacy-guard`
-3. Ejecuta el instalador: `./platforms/linux/install.sh`
+## ⚙ Instalación en Linux
+git clone https://github.com/hernestomamdaz-arch/privacy-guard.git
+cd privacy-guard
+./platforms/linux/install.sh
 
-## 📱 Uso
-El agente se ejecuta automáticamente como un servicio de usuario (`systemctl --user status privacy-guard`).
-Para ver los eventos en tiempo real: `journalctl --user -u privacy-guard -f`
+Ejecuta la interfaz buscando "Privacy Guard" en tu menú de aplicaciones o con:
+python gui.py
+
+## 🧪 Laboratorio Educativo
+Incluye una carpeta labs/ con código en C (vulnerable.c y seguro.c) para aprender sobre vulnerabilidades de Buffer Overflow y cómo mitigarlas.
 
 ## 📜 Licencia
-Este proyecto está bajo la Licencia MIT.
+Licencia MIT. Libre para usar, modificar y compartir.

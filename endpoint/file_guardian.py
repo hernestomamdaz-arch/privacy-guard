@@ -8,6 +8,7 @@ from endpoint.hash_db import HashDB
 from endpoint.quarantine import Quarantine
 from core.notifier import Notifier
 from endpoint.ransomware_guardian import RansomwareEventHandler
+from endpoint.binary_analyzer import analyze_binary
 
 class MalwareEventHandler(FileSystemEventHandler):
     def __init__(self, yara_rules_path, on_detection=None):
@@ -41,15 +42,25 @@ class MalwareEventHandler(FileSystemEventHandler):
             threading.Thread(target=self._handle, args=(event.src_path,), daemon=True).start()
 
     def _handle(self, filepath):
-        # El análisis YARA corre en paralelo, sin bloquear el flujo de eventos
         time.sleep(0.5)
-        if not os.path.exists(filepath): return
+        if not os.path.exists(filepath): 
+            return
+            
+        # --- NUEVO: Análisis de binarios C/C++ ---
+        if filepath.endswith(('.exe', '.elf', '.so', '.bin')) or os.access(filepath, os.X_OK):
+            dangers = analyze_binary(filepath)
+            if dangers:
+                print(f"[ALERTA BINARIO] {filepath} usa funciones inseguras: {', '.join(dangers)}")
+        # ------------------------------------------
+        
         verdict = self._scan_file(filepath)
         if verdict["malicious"]:
             print(f"[ALERTA] {filepath} -> {verdict['reason']}")
             qpath = self.quarantine.move_to_quarantine(filepath, reason=verdict["reason"])
-            if qpath: print(f"   Movido a cuarentena: {qpath}")
-            if self.on_detection: self.on_detection(filepath, verdict)
+            if qpath: 
+                print(f"   Movido a cuarentena: {qpath}")
+            if self.on_detection: 
+                self.on_detection(filepath, verdict)
 
 def start_file_guardian(paths_to_watch, yara_rules_path, on_detection=None):
     event_handler = MalwareEventHandler(yara_rules_path, on_detection)
@@ -69,7 +80,7 @@ def start_file_guardian(paths_to_watch, yara_rules_path, on_detection=None):
         if os.path.exists(path):
             observer.schedule(event_handler, path, recursive=True)
             observer.schedule(ransomware_handler, path, recursive=True)
-            print(f"[*] Vigilando (Malware + Ransomware): {path}")
+            print(f"[*] Vigilando (Malware + Ransomware + Binarios): {path}")
             
     observer.start()
     try:
