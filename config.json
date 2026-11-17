@@ -1,0 +1,9 @@
+{
+    "mostrar_cuarentena": true,
+    "mostrar_plugins": true,
+    "idioma": "es_latam",
+    "rutas_extra": [
+        "/home/morel24d/Descargas"
+    ],
+    "modo_paranoico": false
+}

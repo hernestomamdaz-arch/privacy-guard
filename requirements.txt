@@ -3,5 +3,6 @@ darkdetect==0.8.0
 packaging==26.3
 pillow==13.0.0
 psutil==7.2.2
+Send2Trash==2.2.0
 watchdog==7.1.0
 yara-python==4.5.4
